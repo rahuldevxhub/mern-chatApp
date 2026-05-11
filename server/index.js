@@ -48,8 +48,16 @@ app.use("/api/chatapp/user", router);
 app.use("/api/chatapp/message", messageRouter);
 
 connectDB();
-const PORT = process.env.PORT || 5000;
 
-server.listen(PORT, () => {
+
+if(process.env.NODE_ENV !== "production"){
+  const PORT = process.env.PORT || 5000;
+  server.listen(PORT, () => {
   console.log(`your app is listning on ${PORT}`);
 });
+
+}
+
+export default server;
+
+
