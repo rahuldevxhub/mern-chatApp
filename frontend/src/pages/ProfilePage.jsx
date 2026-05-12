@@ -13,22 +13,32 @@ const ProfilePage = () => {
   const [bio, setBio] = useState(authUser.bio);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (selectedImg) {
-      await updateProfile({ fullName: name, bio });
-      navigate("/");
-      return;
-    }
-    const reader = new FileReader();
+  e.preventDefault();
 
-    reader.readAsDataURL(selectedImg);
-    reader.onload = async () => {
-      const base64Image = reader.result;
-      await updateProfile({ profilePic: base64Image, fullName: name, bio });
-      console.log(base64Image);
-      navigate("/");
-    };
+  // If no image selected
+  if (!selectedImg) {
+    await updateProfile({ fullName: name, bio });
+    navigate("/");
+    return;
+  }
+
+  // If image selected
+  const reader = new FileReader();
+
+  reader.readAsDataURL(selectedImg);
+
+  reader.onload = async () => {
+    const base64Image = reader.result;
+
+    await updateProfile({
+      profilePic: base64Image,
+      fullName: name,
+      bio,
+    });
+
+    navigate("/");
   };
+};
 
   return (
     <div className="min-h-screen bg-cover bg-no-repeat flex items-center justify-center">
@@ -49,15 +59,24 @@ const ProfilePage = () => {
               accept=".png,.jpg,.jpeg"
               hidden
             />
-            <img
-              src={
-                selectedImg
-                  ? URL.createObjectURL(selectedImg)
-                  : authUser?.profilePic || <AccountCircleIcon />
-              }
-              alt=""
-              className={"w-8 h-8 rounded-full object-cover"}
-            />
+            {
+  selectedImg || authUser?.profilePic ? (
+    <img
+      src={
+        selectedImg
+          ? URL.createObjectURL(selectedImg)
+          : authUser?.profilePic
+      }
+      alt=""
+      className="w-8 h-8 rounded-full object-cover"
+    />
+  ) : (
+    <AccountCircleIcon
+      style={{ fontSize: 35 }}
+      className="text-gray-400"
+    />
+  )
+}
             Upload Profile Image
           </label>
           <input
@@ -82,17 +101,29 @@ const ProfilePage = () => {
             Save
           </button>
         </form>
-        <img
-          src={
-            selectedImg
-              ? URL.createObjectURL(selectedImg)
-              : authUser?.profilePic || <AccountCircleIcon />
-          }
-          className={`max-w-44 aspect-square rounded-full mx-10 max-sm:mt-10 ${selectedImg && "rounded-full"}`}
-        />
+        {
+  selectedImg || authUser?.profilePic ? (
+    <img
+      src={
+        selectedImg
+          ? URL.createObjectURL(selectedImg)
+          : authUser?.profilePic
+      }
+      alt=""
+      className="max-w-44 aspect-square rounded-full mx-10 max-sm:mt-10 object-cover"
+    />
+  ) : (
+    <AccountCircleIcon
+      style={{ fontSize: 150 }}
+      className="text-gray-400 mx-10"
+    />
+  )
+}
       </div>
     </div>
   );
 };
 
 export default ProfilePage;
+
+// className={`max-w-44 aspect-square rounded-full mx-10 max-sm:mt-10 ${selectedImg && "rounded-full"}`}
